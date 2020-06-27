@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using NRules.RuleModel.Builders;
 using System.Linq;
+using NovaRules.BRE.Entities;
 
 namespace NovaRules.BRE
 {
@@ -13,6 +14,40 @@ namespace NovaRules.BRE
         public RuleBuilder()
         {
 
+        }
+
+        private IRuleDefinition BuildXRule(XRule rule)
+        {
+            //rule "John Do Large Order Rule"
+            //when
+            //    customer = Customer(x => x.Name == "John Do");
+            //    order = Order(x => x.Customer == customer, x => x.Amount > 100);
+            //then
+            //    Console.WriteLine("Customer {0} has an order in amount of ${1}", customer.Name, order.Amount);
+
+            var builder = new NRules.RuleModel.Builders.RuleBuilder();
+            builder.Name(rule.Name);
+
+            PatternBuilder xrulePattern = builder.LeftHandSide().Pattern(typeof(XRule), "xrule");
+            ParameterExpression xruleParameter = xrulePattern.Declaration.ToParameterExpression();
+            var ruleWhenCondition = Expression.Lambda(
+                Expression.Equal(
+                    Expression.Property(xruleParameter, "Name"),
+                    Expression.Constant("John Do")),
+                xruleParameter);
+            xrulePattern.Condition(ruleWhenCondition);
+
+            PatternBuilder orderPattern = builder.LeftHandSide().Pattern(typeof(Order), "order");
+            Expression<Func<Order, Customer, bool>> orderCondition1 = (order, customer) => order.Customer == customer;
+            orderPattern.Condition(orderCondition1);
+            Expression<Func<Order, bool>> orderCondition2 = order => order.Price > 100.00;
+            orderPattern.Condition(orderCondition2);
+
+            Expression<Action<IContext, Customer, Order>> action =
+                (ctx, customer, order) => Console.WriteLine("Customer {0} has an order in amount of ${1}", customer.Name, order.Price);
+            builder.RightHandSide().Action(action);
+
+            return builder.Build();
         }
 
         private IRuleDefinition BuildJohnDoLargeOrderRule()
@@ -24,7 +59,7 @@ namespace NovaRules.BRE
             //then
             //    Console.WriteLine("Customer {0} has an order in amount of ${1}", customer.Name, order.Amount);
 
-            var builder = new RuleModel.Builders.RuleBuilder();
+            var builder = new NRules.RuleModel.Builders.RuleBuilder();
             builder.Name("John Do Large Order Rule");
 
             PatternBuilder customerPattern = builder.LeftHandSide().Pattern(typeof(Customer), "customer");
@@ -39,55 +74,17 @@ namespace NovaRules.BRE
             PatternBuilder orderPattern = builder.LeftHandSide().Pattern(typeof(Order), "order");
             Expression<Func<Order, Customer, bool>> orderCondition1 = (order, customer) => order.Customer == customer;
             orderPattern.Condition(orderCondition1);
-            Expression<Func<Order, bool>> orderCondition2 = order => order.Amount > 100.00;
+            Expression<Func<Order, bool>> orderCondition2 = order => order.Price > 100.00;
             orderPattern.Condition(orderCondition2);
 
             Expression<Action<IContext, Customer, Order>> action =
-                (ctx, customer, order) => Console.WriteLine("Customer {0} has an order in amount of ${1}", customer.Name, order.Amount);
+                (ctx, customer, order) => Console.WriteLine("Customer {0} has an order in amount of ${1}", customer.Name, order.Price);
             builder.RightHandSide().Action(action);
 
             return builder.Build();
         }
 
-        private IRuleDefinition BuildMultipleOrdersRule()
-        {
-            //rule "Multiple Orders Rule"
-            //when
-            //    customer = Customer(x => x.IsPreferred);
-            //    orders = Query(
-            //        Order(x => x.Customer == customer, x => x.IsOpen)
-            //        Collect()
-            //        Where(c => c.Count() >= 3)
-            //    );
-            //then
-            //    Console.WriteLine("Customer {0} has {1} open order(s)", customer.Name, orders.Count());
-
-            var builder = new RuleModel.Builders.RuleBuilder();
-            builder.Name("Multiple Orders Rule");
-
-            PatternBuilder customerPattern = builder.LeftHandSide().Pattern(typeof(Customer), "customer");
-            Expression<Func<Customer, bool>> customerCondition = customer => customer.IsPreferred;
-            customerPattern.Condition(customerCondition);
-
-            PatternBuilder ordersPattern = builder.LeftHandSide().Pattern(typeof(IEnumerable<Order>), "orders");
-            Expression < Func < IEnumerable<order>, bool>= "" > aggregateCondition = orders => orders.Count() >= 3;
-            ordersPattern.Condition(aggregateCondition);
-
-            var aggregate = ordersPattern.Aggregate();
-            aggregate.Collect();
-
-            var orderPattern = aggregate.Pattern(typeof(Order), "order");
-            Expression<Func<Order, Customer, bool>> orderCondition1 = (order, customer) => order.Customer == customer;
-            orderPattern.Condition(orderCondition1);
-            Expression<Func<Order, bool>> orderCondition2 = order => order.IsOpen;
-            orderPattern.Condition(orderCondition2);
-
-            Expression<Action<IContext, Customer, IEnumerable<order>>> action =
-                (ctx, customer, orders) => Console.WriteLine("Customer {0} has {1} open order(s)", customer.Name, orders.Count());
-            builder.RightHandSide().Action(action);
-
-            return builder.Build();
-        }
+      
 
         private IRuleDefinition BuildImportantCustomerRule()
         {
@@ -129,6 +126,5 @@ namespace NovaRules.BRE
             return builder.Build();
         }
     }
+}
 
-}
-}
