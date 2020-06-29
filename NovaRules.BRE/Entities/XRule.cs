@@ -23,5 +23,6 @@ namespace NovaRules.BRE.Entities
 
         public List<RightFragment> RightItems { get; set; }
 
+		public List<ResultItem> ResultItems { get; set; }
     }
 }

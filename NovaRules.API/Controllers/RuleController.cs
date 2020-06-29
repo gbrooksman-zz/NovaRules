@@ -18,7 +18,9 @@ namespace NovaRules.API.Controllers
 		{
 			RuleEngine xre = new RuleEngine();
 
-			var x = xre.Run();
+			//var x = xre.Run();
+
+			var x = xre.LoadAndRun();
 
 			return Ok(x.ToString());
 		}

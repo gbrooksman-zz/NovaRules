@@ -1,0 +1,67 @@
+[
+	{
+	   "Name":"A Test Rule",
+	   "Description":"A sample Description",
+	   "Priority":10,
+	   "Tag":"A Tag",
+	   "LeftItems":[
+		  {
+			 "LinkAsOr":false,
+			 "Key":"Key",
+			 "KeyDataType":"string",
+			 "Attribute":"1.11",
+			 "AttributeDataType":"string",
+			 "Value":"*",
+			 "ValueDataType":"string"
+		  },
+		  {
+			"LinkAsOr":true,
+			"Key":"Key",
+			"KeyDataType":"string",
+			"Attribute":"RU",
+			"AttributeDataType":"string",
+			"Value":"*",
+			"ValueDataType":"string"
+		 }
+	   ],
+	   "RightItems":[
+		  {
+			 "Key":"Key",
+			 "KeyDataType":"string",
+			 "Attribute":"UND",
+			 "AttributeDataType":"string",
+			 "Value":"99999",
+			 "ValueDataType":"string"
+		  }
+	   ],
+	   "ResultItems":[]
+	},
+	{
+		"Name":"Another Test Rule",
+		"Description":"Another sample Description",
+		"Priority":20,
+		"Tag":"Another Tag",
+		"LeftItems":[
+		   {
+			  "LinkAsOr":false,
+			  "Key":"Key",
+			  "KeyDataType":"string",
+			  "Attribute":"1.12",
+			  "AttributeDataType":"string",
+			  "Value":"*",
+			  "ValueDataType":"string"
+		   }
+		],
+		"RightItems":[
+		   {
+			  "Key":"Key",
+			  "KeyDataType":"string",
+			  "Attribute":"UND",
+			  "AttributeDataType":"string",
+			  "Value":"00000",
+			  "ValueDataType":"string"
+		   }
+		],
+		"ResultItems":[]
+	 }
+ ]
