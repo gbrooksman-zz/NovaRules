@@ -24,6 +24,7 @@ namespace NovaRules.BRE
 
 			ISession session = factory.CreateSession();
 
+			
 
 			// var customer = new Customer("John Do");
 			// session.Insert(customer);
